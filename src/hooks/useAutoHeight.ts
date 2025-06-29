@@ -24,6 +24,7 @@ export function useAutoHeight({
   const calculationTimeoutRef = useRef<any>(null)
   const isCalculatingRef = useRef(false)
   const hasInitializedRef = useRef(false)
+  const hasCalculatedRef = useRef(false)
   
   // autoHeight 옵션 메모이제이션
   const memoizedOptions = useMemo(() => {
@@ -47,8 +48,9 @@ export function useAutoHeight({
     try {
       const rect = containerRef.current.getBoundingClientRect()
       
-      // 자동 높이 계산
-      const topPosition = rect.top + memoizedOptions.topOffset
+      // 컨테이너의 offsetTop을 사용하여 더 안정적인 위치 계산
+      const containerTop = containerRef.current.offsetTop
+      const topPosition = containerTop + memoizedOptions.topOffset
       const availableSpace = window.innerHeight - topPosition - memoizedOptions.bottomOffset
       
       // 최소/최대 높이 제한
@@ -65,7 +67,8 @@ export function useAutoHeight({
           calculatedHeight,
           heightDiff,
           windowHeight: window.innerHeight,
-          availableSpace: window.innerHeight - rect.top - memoizedOptions.topOffset - memoizedOptions.bottomOffset
+          containerTop,
+          availableSpace
         })
         lastCalculatedHeight.current = calculatedHeight
         onHeightChange(calculatedHeight)
@@ -99,24 +102,33 @@ export function useAutoHeight({
     }
     
     if (shouldAutoCalculate && typeof height !== 'number' && memoizedOptions) {
-      // 즉시 계산 (초기 한 번만)
-      if (!lastCalculatedHeight.current) {
-        calculateHeight()
-      }
-      
-      // DOM 준비 후 계산
-      const timeoutId = setTimeout(calculateHeight, 100)
-      
-      // resize 이벤트만 등록 (다른 이벤트 제외)
-      window.addEventListener('resize', debouncedCalculateHeight, { passive: true })
-      
-      return () => {
-        clearTimeout(timeoutId)
-        if (calculationTimeoutRef.current) {
-          clearTimeout(calculationTimeoutRef.current)
+      // 초기 계산은 한 번만 수행
+      if (!hasCalculatedRef.current) {
+        hasCalculatedRef.current = true
+        
+        // DOM 준비 후 한 번만 계산
+        const timeoutId = setTimeout(() => {
+          calculateHeight()
+        }, 100)
+        
+        // resize 이벤트 등록
+        window.addEventListener('resize', debouncedCalculateHeight, { passive: true })
+        
+        return () => {
+          clearTimeout(timeoutId)
+          if (calculationTimeoutRef.current) {
+            clearTimeout(calculationTimeoutRef.current)
+          }
+          window.removeEventListener('resize', debouncedCalculateHeight)
+          isCalculatingRef.current = false
         }
-        window.removeEventListener('resize', debouncedCalculateHeight)
-        isCalculatingRef.current = false
+      } else {
+        // 이미 계산된 경우 resize 이벤트만 등록
+        window.addEventListener('resize', debouncedCalculateHeight, { passive: true })
+        
+        return () => {
+          window.removeEventListener('resize', debouncedCalculateHeight)
+        }
       }
     }
   }, [height, memoizedOptions, calculateHeight, debouncedCalculateHeight]) // autoHeight 제거하여 불필요한 리렌더링 방지
