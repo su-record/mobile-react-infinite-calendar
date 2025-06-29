@@ -1,0 +1,56 @@
+{
+  "name": "mobile-react-infinite-calendar",
+  "version": "1.0.0",
+  "description": "A mobile-optimized infinite scroll calendar component for React",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "npm run prepare-private",
+    "build": "npx tsc && npx tsc-alias",
+    "postbuild": "npm run restore-public",
+    "dev": "npx tsc --watch",
+    "dev-server": "npx serve -p 3000 .",
+    "prepublishOnly": "npm run build",
+    "prepare-private": "node scripts/prepare-private.js",
+    "restore-public": "node scripts/restore-public.js",
+    "deploy": "bash scripts/deploy.sh"
+  },
+  "keywords": [
+    "react",
+    "calendar",
+    "infinite-scroll",
+    "mobile",
+    "typescript",
+    "date-picker",
+    "korean-holidays",
+    "holidays",
+    "responsive",
+    "touch-friendly",
+    "multilingual"
+  ],
+  "author": "Su",
+  "license": "MIT",
+  "peerDependencies": {
+    "date-fns": ">=2.0.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.7",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "tsc-alias": "^1.8.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/su-record/mobile-react-infinite-calendar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/su-record/mobile-react-infinite-calendar/issues"
+  },
+  "homepage": "https://github.com/su-record/mobile-react-infinite-calendar#readme"
+}
