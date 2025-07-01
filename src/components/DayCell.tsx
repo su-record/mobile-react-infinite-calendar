@@ -1,5 +1,5 @@
 import { memo, useMemo, useCallback } from 'react'
-import { format, isSameMonth, isToday, isBefore, startOfDay, getDay } from 'date-fns'
+import { format, isSameMonth, isToday, getDay, isBefore, startOfDay } from 'date-fns'
 import { cn } from '@/utils/cn'
 import { COLOR_CONSTANTS, UI_CONSTANTS } from '@/constants/calendar'
 import type { CalendarEvent, Holiday, ClassNameOptions } from '@/types'
@@ -40,7 +40,10 @@ const DayCell = memo(function DayCell({
   // 날짜 상태 계산 (메모이제이션)
   const dayState = useMemo(() => {
     const isCurrentMonth = isSameMonth(day, activeMonth)
-    const isDisabled = isBefore(day, startOfDay(new Date()))
+    // 과거 날짜이면서 이벤트가 없는 경우만 비활성화
+    const isPastDate = isBefore(day, startOfDay(new Date()))
+    const hasEvents = dayEvents.length > 0
+    const isDisabled = isPastDate && !hasEvents
     const dayOfWeek = getDay(day)
     const isHoliday = dayHolidays.length > 0
     const holidayColor = dayHolidays.length > 0 ? 
@@ -53,7 +56,7 @@ const DayCell = memo(function DayCell({
       isHoliday,
       holidayColor
     }
-  }, [day, activeMonth, dayHolidays])
+  }, [day, activeMonth, dayHolidays, dayEvents])
 
   // 색상 클래스 계산 (메모이제이션)
   const textColorData = useMemo(() => {

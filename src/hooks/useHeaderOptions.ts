@@ -24,11 +24,14 @@ export function useHeaderOptions({
 }: UseHeaderOptionsProps) {
 
   // options 합치기 (레거시 지원)
-  const mergedOptions: CalendarOptions = useMemo(() => ({
-    ...options,
-    height: height || options.height,
-    initialDate: initialDate || options.initialDate
-  }), [options, height, initialDate])
+  const mergedOptions: CalendarOptions = useMemo(() => {
+    const merged = {
+      ...options,
+      height: height || options.height,
+      initialDate: initialDate || options.initialDate
+    }
+    return merged
+  }, [options, height, initialDate])
 
   // 헤더 표시 옵션 처리
   const headerOptions: HeaderDisplayOptions = useMemo(() => {

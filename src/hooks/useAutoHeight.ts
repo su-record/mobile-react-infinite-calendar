@@ -41,17 +41,25 @@ export function useAutoHeight({
   // 높이 계산 함수 (최적화된 버전)
   const calculateHeight = useCallback(() => {
     // 중복 계산 방지
-    if (isCalculatingRef.current || !containerRef.current || !memoizedOptions) return
+    if (isCalculatingRef.current || !containerRef.current || !memoizedOptions) {
+      uiLogger.debug('높이 계산 스킵', {
+        isCalculating: isCalculatingRef.current,
+        hasContainer: !!containerRef.current,
+        hasOptions: !!memoizedOptions
+      })
+      return
+    }
     
     isCalculatingRef.current = true
     
     try {
       const rect = containerRef.current.getBoundingClientRect()
       
-      // 컨테이너의 offsetTop을 사용하여 더 안정적인 위치 계산
-      const containerTop = containerRef.current.offsetTop
+      // 뷰포트 기준 top 위치를 사용하여 정확한 계산
+      const containerTop = rect.top
       const topPosition = containerTop + memoizedOptions.topOffset
       const availableSpace = window.innerHeight - topPosition - memoizedOptions.bottomOffset
+      
       
       // 최소/최대 높이 제한
       const calculatedHeight = Math.min(
@@ -76,7 +84,7 @@ export function useAutoHeight({
     } finally {
       isCalculatingRef.current = false
     }
-  }, [containerRef, memoizedOptions, onHeightChange])
+  }, [memoizedOptions])
   
   // 강화된 디바운싱 (300ms)
   const debouncedCalculateHeight = useCallback(() => {
@@ -84,7 +92,7 @@ export function useAutoHeight({
       clearTimeout(calculationTimeoutRef.current)
     }
     calculationTimeoutRef.current = setTimeout(calculateHeight, 300)
-  }, [calculateHeight])
+  }, [])
 
   useEffect(() => {
     // height가 'auto'이거나 autoHeight 옵션이 있는 경우 자동 계산
@@ -102,14 +110,26 @@ export function useAutoHeight({
     }
     
     if (shouldAutoCalculate && typeof height !== 'number' && memoizedOptions) {
-      // 초기 계산은 한 번만 수행
+      // 초기 계산 및 재시도
       if (!hasCalculatedRef.current) {
-        hasCalculatedRef.current = true
+        // 즉시 계산 시도
+        calculateHeight()
         
-        // DOM 준비 후 한 번만 계산
+        // DOM이 완전히 준비되지 않았을 경우를 위한 재시도
         const timeoutId = setTimeout(() => {
           calculateHeight()
-        }, 100)
+          
+          // 계산 성공 여부 확인
+          if (lastCalculatedHeight.current && lastCalculatedHeight.current > memoizedOptions.minHeight) {
+            hasCalculatedRef.current = true
+          } else {
+            // 계산 실패 시 추가 재시도
+            setTimeout(() => {
+              calculateHeight()
+              hasCalculatedRef.current = true
+            }, 300)
+          }
+        }, 50)
         
         // resize 이벤트 등록
         window.addEventListener('resize', debouncedCalculateHeight, { passive: true })
@@ -131,5 +151,5 @@ export function useAutoHeight({
         }
       }
     }
-  }, [height, memoizedOptions, calculateHeight, debouncedCalculateHeight]) // autoHeight 제거하여 불필요한 리렌더링 방지
+  }, [height, memoizedOptions]) // 함수들을 의존성에서 제거하여 무한 루프 방지
 }

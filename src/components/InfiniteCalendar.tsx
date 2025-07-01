@@ -206,7 +206,7 @@ const InfiniteCalendar = memo(function InfiniteCalendar({
     }
     
     if (optionHeight === 'auto' || autoHeight) {
-      return { height: availableHeight ? `${availableHeight}px` : '400px' }
+      return { height: availableHeight ? `${availableHeight}px` : '100%' }
     }
     
     return { height: optionHeight }

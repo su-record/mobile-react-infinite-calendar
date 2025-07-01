@@ -180,11 +180,12 @@ export function useCalendarComposer({
         
         // 연도별로 데이터 로드
         const yearPromises = Array.from(yearGroups.keys()).map(async year => {
-          // 각 월별로 공휴일 조회 후 합치기
-          const monthPromises = []
-          for (let month = 1; month <= 12; month++) {
-            monthPromises.push(holidayServiceInstanceMemo.getHolidays(year, month))
-          }
+          // 해당 연도에서 실제로 표시되는 월들만 조회
+          const monthsInYear = yearGroups.get(year) || []
+          const uniqueMonths = Array.from(new Set(monthsInYear.map(date => date.getMonth() + 1)))
+          const monthPromises = uniqueMonths.map(month => 
+            holidayServiceInstanceMemo.getHolidays(year, month)
+          )
           const monthResults = await Promise.all(monthPromises)
           return monthResults.flat()
         })
