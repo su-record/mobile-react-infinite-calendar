@@ -349,6 +349,14 @@ const fetchEvents = async (startDate: Date, endDate: Date) => {
     endTime: 'endTime',
     color: 'eventColor'
   }}
+  onDayAction={(date, dayInfo) => {
+    // 동적 이벤트의 원본 데이터 접근
+    const event = dayInfo?.events[0]
+    if (event?.originalData) {
+      console.log('원본 API 데이터:', event.originalData)
+      // API에서 받은 모든 필드에 접근 가능
+    }
+  }}
   onDynamicEventLoad={(startDate, endDate, events) => {
     console.log(`로드된 이벤트: ${events.length}개 (${startDate.toDateString()} ~ ${endDate.toDateString()})`)
   }}
@@ -362,7 +370,8 @@ const fetchEvents = async (startDate: Date, endDate: Date) => {
     id: apiData.id || Math.random().toString(),
     title: apiData.subject || 'Untitled',
     date: apiData.scheduledDate,
-    color: apiData.priority === 'high' ? '#ff4444' : '#4444ff'
+    color: apiData.priority === 'high' ? '#ff4444' : '#4444ff',
+    originalData: apiData  // 원본 데이터 보존
   })}
 />
 ```

@@ -89,6 +89,7 @@ export function useDynamicEvents({
           id: item[dynamicEventMapping.id || 'id'] || `dynamic-${Date.now()}-${index}`,
           title: item[dynamicEventMapping.title || 'title'] || 'Untitled Event',
           date: item[dynamicEventMapping.date || 'date'] || format(new Date(), 'yyyy-MM-dd'),
+          originalData: item  // 원본 데이터 보존
         }
 
         // 옵셔널 필드들 (타입 강제 변환)
@@ -113,7 +114,8 @@ export function useDynamicEvents({
         id: item.id || `dynamic-${Date.now()}-${index}`,
         title: item.title || item.name || 'Untitled Event',
         date: item.date || item.startDate || format(new Date(), 'yyyy-MM-dd'),
-        color: item.color
+        color: item.color,
+        originalData: item  // 원본 데이터 보존
       }
       
       // 선택적 필드들
