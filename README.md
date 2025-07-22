@@ -123,10 +123,31 @@ const events = [
   }
 ]
 
+// 원본 데이터를 포함한 이벤트
+const eventsWithOriginalData = [
+  {
+    date: '2024-01-15',
+    title: '팀 미팅',
+    color: '#3b82f6',
+    originalData: {
+      meetingId: 123,
+      location: '회의실 A',
+      participants: ['김철수', '이영희'],
+      agenda: '프로젝트 진행 상황 검토'
+    }
+  }
+]
+
 <InfiniteCalendar
   holidayServiceKey="your_api_key_here"
-  events={events}
+  events={eventsWithOriginalData}
   onDayAction={(date, dayInfo) => {
+    // 원본 데이터 접근
+    const event = dayInfo?.events[0]
+    if (event?.originalData) {
+      console.log('미팅 위치:', event.originalData.location)
+      console.log('참석자:', event.originalData.participants)
+    }
     console.log(`날짜 클릭: ${date.toDateString()}`)
     if (dayInfo?.events.length > 0) {
       console.log(`이벤트 ${dayInfo.events.length}개`)
@@ -444,15 +465,38 @@ function CustomCalendarControls() {
 ### CalendarEvent
 
 ```tsx
-interface CalendarEvent {
-  id: string;
-  title: string;
-  startTime: string; // ISO date string
-  endTime: string; // ISO date string
-  description?: string;
-  color?: string;
-  metadata?: Record<string, any>;
+// 제네릭을 사용한 유연한 이벤트 타입
+interface CalendarEvent<T = any> {
+  date: string;        // YYYY-MM-DD 형식 (필수)
+  title?: string;      // 툴팁이나 클릭 시 표시용
+  color?: string;      // 도트 색상 (기본: 빨강)
+  id?: string;         // 고유 식별자 (자동 생성 가능)
+  originalData?: T;    // 원본 데이터를 그대로 보관
 }
+
+// 사용 예시
+type MyApiEvent = {
+  eventId: number;
+  eventName: string;
+  startDateTime: string;
+  endDateTime: string;
+  location: string;
+  participants: string[];
+};
+
+const events: CalendarEvent<MyApiEvent>[] = [{
+  date: '2024-01-15',
+  title: '팀 미팅',
+  color: '#1a73e8',
+  originalData: {
+    eventId: 123,
+    eventName: '월간 팀 미팅',
+    startDateTime: '2024-01-15T10:00:00',
+    endDateTime: '2024-01-15T11:30:00',
+    location: '회의실 A',
+    participants: ['김철수', '이영희']
+  }
+}];
 ```
 
 ### Holiday
@@ -528,7 +572,6 @@ interface CalendarOptions {
 | `dynamicEventTransform` | `(apiData: any) => CalendarEvent`                                                  | -         | 커스텀 데이터 변환 함수     |
 | `onDynamicEventLoad`    | `(startDate: Date, endDate: Date, events: CalendarEvent[]) => void`                | -         | 동적 이벤트 로드 완료 콜백  |
 | `onDayAction`           | `(date: Date, dayInfo?: { events: CalendarEvent[], holidays: Holiday[] }) => void` | -         | 날짜 클릭 시 콜백           |
-| `onEventClick`          | `(event: CalendarEvent) => void`                                                   | -         | 이벤트 클릭 시 콜백         |
 | `locale`                | `string`                                                                           | `'ko-KR'` | 로케일 설정                 |
 | `options`               | `CalendarOptions`                                                                  | -         | UI/스타일 옵션              |
 

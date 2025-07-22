@@ -32,7 +32,7 @@ const WeekDaysHeader = memo(function WeekDaysHeader({
   }
 
   return (
-    <div className="grid grid-cols-7 mt-3">
+    <div className="grid grid-cols-7">
       {weekDays.map((day, index) => (
         <div
           key={day}

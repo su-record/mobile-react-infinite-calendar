@@ -25,7 +25,7 @@ interface UseCalendarComposerProps {
   holidayServiceKey?: string    // 공휴일 API 서비스 키
 }
 
-// 이벤트 타입 체크 함수
+// 이벤트 타입 체크 함수 (기존 호환성 유지)
 const isDetailedEvent = (event: CalendarEvent): event is DetailedCalendarEvent => {
   return 'startTime' in event && 'endTime' in event
 }

@@ -44,12 +44,12 @@ const CalendarHeader = memo(function CalendarHeader({
   
   // 클래스네임들 (메모이제이션)
   const headerClassName = useMemo(() => cn(
-    "flex-shrink-0 py-3",
+    "flex-shrink-0",
     classNames?.header
   ), [classNames?.header])
   
   const monthTitleClassName = useMemo(() => cn(
-    "text-xl font-semibold transition-all duration-300 cursor-pointer hover:text-blue-600",
+    "text-lg font-semibold transition-all duration-300 cursor-pointer hover:text-blue-600",
     !isCurrentMonthVisible && "text-orange-600",
     classNames?.monthTitle
   ), [isCurrentMonthVisible, classNames?.monthTitle])

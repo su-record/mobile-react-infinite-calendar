@@ -46,7 +46,6 @@ interface InfiniteCalendarProps {
   
   // === 이벤트 핸들러 ===
   onDayAction?: (date: Date, dayInfo?: { events: CalendarEvent[], holidays: Holiday[] }) => void
-  onEventClick?: (event: CalendarEvent) => void
   
   // === 지역화 ===
   locale?: LocaleCode | string
@@ -92,7 +91,6 @@ const InfiniteCalendar = memo(function InfiniteCalendar({
   
   // 이벤트 핸들러
   onDayAction,
-  onEventClick: _onEventClick, // 현재 미사용이지만 API 호환성을 위해 유지
   
   // 지역화
   locale = 'ko-KR',

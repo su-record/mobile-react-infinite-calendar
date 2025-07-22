@@ -8,7 +8,15 @@ export type {
   Holiday,
   ViewMode,
   ColorScheme,
-  Theme
+  Theme,
+  CalendarOptions,
+  ClassNameOptions,
+  LocaleCode,
+  // Deprecated types (기존 호환성용)
+  SimpleCalendarEvent,
+  DetailedCalendarEvent,
+  Reservation,
+  Event
 } from './types'
 
 // 훅 export (고급 사용자용)

@@ -1,26 +1,30 @@
 // 패키지 전용 타입 정의
 
-// 간단한 캘린더 이벤트 타입 (권장)
-export interface SimpleCalendarEvent {
+// 캘린더에 표시할 최소 정보
+interface CalendarEventDisplay {
   date: string        // YYYY-MM-DD 형식
   title?: string      // 툴팁이나 클릭 시 표시용 (선택사항)
   color?: string      // 도트 색상 (기본: 빨강)
   id?: string         // 선택사항 (자동 생성 가능)
 }
 
-// 상세한 이벤트 타입 (기존 호환성용)
-export interface DetailedCalendarEvent {
+// 제네릭을 사용한 유연한 이벤트 타입
+export interface CalendarEvent<T = any> extends CalendarEventDisplay {
+  originalData?: T    // 원본 데이터를 그대로 보관
+}
+
+// 간단한 캘린더 이벤트 타입 (기존 호환성용, Deprecated)
+export interface SimpleCalendarEvent extends CalendarEventDisplay {}
+
+// 상세한 이벤트 타입 (기존 호환성용, Deprecated)
+export interface DetailedCalendarEvent extends CalendarEventDisplay {
   id: string
   title: string
   startTime: string   // ISO date string
   endTime: string     // ISO date string
   description?: string
-  color?: string
   metadata?: Record<string, any>
 }
-
-// 유니온 타입으로 두 가지 모두 지원
-export type CalendarEvent = SimpleCalendarEvent | DetailedCalendarEvent
 
 // 공휴일 타입
 export interface Holiday {
@@ -114,7 +118,6 @@ export interface InfiniteCalendarProps {
   
   // 이벤트 핸들러
   onDateClick?: (date: Date, events: CalendarEvent[]) => void
-  onEventClick?: (event: CalendarEvent) => void
   
   // 지역화
   locale?: LocaleCode | string    // 기본값: 'ko-KR'
