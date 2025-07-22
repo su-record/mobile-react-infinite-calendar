@@ -1,6 +1,6 @@
 {
   "name": "mobile-react-infinite-calendar",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A mobile-optimized infinite scroll calendar component for React",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
